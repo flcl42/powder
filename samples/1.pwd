@@ -1,0 +1,16 @@
+Hide Everything
+
+Hide Both | Hide Password
+some:body
+
+Copy Login | Copy Password
+194261@gmail.com:kekeke!1sdasd
+
+Copy Login | Copy Password
+asdasd3e43:kekeke.1sdasd
+
+
+
+Encrypt (password, data):
+    password
+    data + salt
