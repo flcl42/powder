@@ -19,7 +19,7 @@ export class CodelensProvider implements CodeLensProvider {
 	public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
 	constructor() {
-		this.regex = /[^\r\n:]+[:][^\r\n:]{3,}/g;
+		this.regex = /[^\r\n:\s]+[:][^\r\n:\s]{3,}/g;
 
 		workspace.onDidChangeConfiguration((_) => {
 			this._onDidChangeCodeLenses.fire();
@@ -36,6 +36,12 @@ export class CodelensProvider implements CodeLensProvider {
 					continue;
 				}
 				const pos = document.positionAt(match.index);
+				
+				// TODO: Cover by regex
+				if(pos.character !== 0){
+					continue;
+				}
+
 				const range = new Range(pos, pos.translate(undefined, match[0].length));
 
 				if (range) {

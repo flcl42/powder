@@ -7,7 +7,8 @@
 		"url": "https://github.com/flcl42/powder"
 	},
 	"displayName": "Powder",
-	"description": "Store passwords in text easily",
+	"description": "Encrypt passwords, store them in text safely",
+	"icon": "icon.jpg",
 	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.63.0"

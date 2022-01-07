@@ -1,4 +1,4 @@
-# Powder - store passwords as text easily
+# Powder - encrypt passwords, store them in text safely
 
 The extension allows to encrypt passwords with a master password.<br>
 It enables CodeLens (inline text actions) for any text that looks like:
@@ -12,9 +12,7 @@ Password part can be encrypted, decrypted and copied to clipboard.
 <sub><span style="text-decoration: underline;">Hide Password</span> | <span style="text-decoration: underline;">Copy Password</span></sub><br>
 test<span>@example.<span>com:password123
 
-↓
-Click Hide Password, enter master password
-↓
+↓ Click "Hide Password", enter master password ↓
 
 <sub><span style="text-decoration: underline;">Unhide Password</span> | <span style="text-decoration: underline;">Copy Password</span></sub><br>
 test<span>@example.<span>com:AAF5etlyDen/7nX6nbJ5IUY+v/1d5NC3RFMxLxnHhGwRfHOI4cfyQfWtSs41Z6OAdu/Gn78=
@@ -51,9 +49,16 @@ To start development:
 
 ## Roadmap
 
+- Fix selection after encryption
+- Handle errors on incorrect password
+- Improve regex
 - Encryption of all the lines in a file with one command
 - Improving payload length handling
 - More compact encrypted line without damaging encryption strength
+
+Additionally:
+- Associate with .pwd, make option to enable extension for these files only?
+- Copy login?
 - Should we also enable login encryption?
 - What else can we encrypt?
 - Powder mode - change Hide Password/Unhide Password with Powder/Unpowder
