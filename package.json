@@ -1,13 +1,14 @@
 {
 	"name": "powder",
 	"license": "MIT",
+	"publisher": "flcl42",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/flcl42/powder"
 	},
 	"displayName": "Powder",
-	"description": "Store passwords easily",
-	"version": "0.0.1",
+	"description": "Store passwords in text easily",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.63.0"
 	},
