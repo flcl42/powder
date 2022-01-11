@@ -9,7 +9,7 @@
 	"displayName": "Powder",
 	"description": "Encrypt passwords, store them in text safely",
 	"icon": "icon.jpg",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"engines": {
 		"vscode": "^1.63.0"
 	},
