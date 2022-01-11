@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import {
 	CancellationToken, CodeLens, CodeLensProvider, commands,
 	env, EventEmitter, ExtensionContext, languages, Event,
-	Position, Range, TextDocument, window, workspace
+	Position, Range, TextDocument, window, workspace, Selection
 } from 'vscode';
 import { isEncrypted, encrypt, decrypt } from './crypto-utils';
 
@@ -19,7 +19,7 @@ export class CodelensProvider implements CodeLensProvider {
 	public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
 	constructor() {
-		this.regex = /[^\r\n:\s]+[:][^\r\n:\s]{3,}/g;
+		this.regex = /^(?![^\r\n:\s{}"']*:\/\/)[^\r\n:\s{}"']+[:][^\r\n:\s]{3,}$/gm;
 
 		workspace.onDidChangeConfiguration((_) => {
 			this._onDidChangeCodeLenses.fire();
@@ -36,12 +36,6 @@ export class CodelensProvider implements CodeLensProvider {
 					continue;
 				}
 				const pos = document.positionAt(match.index);
-				
-				// TODO: Cover by regex
-				if(pos.character !== 0){
-					continue;
-				}
-
 				const range = new Range(pos, pos.translate(undefined, match[0].length));
 
 				if (range) {
@@ -61,7 +55,11 @@ export class CodelensProvider implements CodeLensProvider {
 	}
 
 	public resolveCodeLens(codeLens: CodeLens | any, token: CancellationToken) {
-		const text = window.activeTextEditor?.document.getText(codeLens.range);
+		const editor = window.activeTextEditor;
+		if(typeof editor === 'undefined'){
+			return;
+		}
+		const text = editor.document.getText(codeLens.range);
 
 		let password = text?.substring(text.indexOf(":") + 1);
 		if (!password) {
@@ -94,9 +92,12 @@ export async function activate(context: ExtensionContext) {
 
 	toClean.push(languages.registerCodeLensProvider("*", codelensProvider));
 
-	toClean.push(commands.registerCommand('powder.toggle-password-encryption', async (range) => {
-		const text = window.activeTextEditor?.document.getText(range);
-
+	toClean.push(commands.registerCommand('powder.toggle-password-encryption', async (range: Range) => {
+		const editor = window.activeTextEditor;
+		if(typeof editor === 'undefined'){
+			return;
+		}
+		const text = editor.document.getText(range);
 		if (!text) {
 			return;
 		}
@@ -117,17 +118,37 @@ export async function activate(context: ExtensionContext) {
 			if (!decryptedPassword) {
 				return;
 			}
+			let doResetSelection = false;
+			for(var selection of editor.selections){
+				if(typeof selection.intersection(range) !== 'undefined' || range.contains(selection)){
+					doResetSelection = true;
+				}
+			}
 			await window.activeTextEditor?.edit(editBuilder => {
 				editBuilder.replace(range.with(new Position(range.start.line, text.indexOf(":") + 1)), decryptedPassword);
 			});
+			if(doResetSelection){
+				let atEnd = new Position(range.start.line, text.indexOf(":") + 1);
+				editor.selection = new Selection(atEnd, atEnd);
+			}
 		} else {
 			const encryptedPassword = await encrypt(password, masterPassword);
 			if (!encryptedPassword) {
 				return;
 			}
+			let doResetSelection = false;
+				for(var selection of editor.selections){
+					if(typeof selection.intersection(range) !== 'undefined' || range.contains(selection)){
+						doResetSelection = true;
+					}
+				}
 			await window.activeTextEditor?.edit(editBuilder => {
 				editBuilder.replace(range.with(new Position(range.start.line, text.indexOf(":") + 1)), encryptedPassword);
 			});
+			if(doResetSelection){
+				let atEnd = new Position(range.start.line, text.indexOf(":") + 1);
+				editor.selection = new Selection(atEnd, atEnd);
+			}
 		}
 	}));
 

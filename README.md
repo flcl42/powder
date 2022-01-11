@@ -49,10 +49,9 @@ To start development:
 
 ## Roadmap
 
-- Fix selection after encryption
 - Handle errors on incorrect password
 - Improve regex
-- Encryption of all the lines in a file with one command
+- Encryption of all the login/password pairs in a file with one command
 - Improving payload length handling
 - More compact encrypted line without damaging encryption strength
 
