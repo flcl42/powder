@@ -1,0 +1,62 @@
+name: Publish VS Code Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and package without publishing
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vscode-marketplace-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to Visual Studio Marketplace
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run lint
+        run: yarn run lint
+
+      - name: Package VSIX
+        run: npx -y @vscode/vsce package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: powder-vsix
+          path: "*.vsix"
+
+      - name: Publish to Visual Studio Marketplace
+        if: ${{ inputs.dry_run == 'false' }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "Missing VSCE_PAT repository secret." >&2
+            exit 1
+          fi
+
+          npx -y @vscode/vsce publish --pat "$VSCE_PAT"
