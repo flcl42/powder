@@ -19,7 +19,7 @@ export class CodelensProvider implements CodeLensProvider {
 	public readonly onDidChangeCodeLenses: Event<void> = this._onDidChangeCodeLenses.event;
 
 	constructor() {
-		this.regex = /^(?![^\r\n:\s{}"']*:\/\/)[^\r\n:\s{}"']+[:][^\r\n:\s]{3,}$/gm;
+		this.regex = /^(?![^\r\n:\s{}"']*:\/\/)[^\r\n:\s{}"']+[:](?![\\/])[^\r\n:\s]{3,}$/gm;
 
 		workspace.onDidChangeConfiguration((_) => {
 			this._onDidChangeCodeLenses.fire();
